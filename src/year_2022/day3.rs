@@ -1,8 +1,4 @@
-use std::{
-    collections::{HashMap, HashSet},
-    fmt::format,
-    vec,
-};
+use std::collections::{HashMap, HashSet};
 
 pub fn solve_part1(input: &str) -> i32 {
     let mut map = HashMap::new();
