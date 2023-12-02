@@ -62,15 +62,13 @@ impl TryFrom<&str> for MaxGameRecord {
 fn parse_input(input: &str) -> i32 {
     input
         .split("\n")
-        .map(MaxGameRecord::try_from)
-        .flatten()
-        .filter_map(|record| {
+        .filter_map(|line| {
             let MaxGameRecord {
                 id,
                 red,
                 green,
                 blue,
-            } = record;
+            } = MaxGameRecord::try_from(line).ok()?;
 
             if red <= 12 && green <= 13 && blue <= 14 {
                 return Some(id);
