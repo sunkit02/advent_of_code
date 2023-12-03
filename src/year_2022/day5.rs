@@ -1,16 +1,16 @@
 pub fn solve_part1(input: &str) -> String {
+    let crane = CrateMover9000;
+    return part1(input, &crane);
+}
+
+fn part1(input: &str, crane: &impl Crane) -> String {
     let mut top_crates = Vec::new();
     let (cargo_stacks, instructions) = input.split_once("\n\n").expect("Wrong input format");
 
     let mut cargo_stacks = parse_cargo_stacks(cargo_stacks);
     let instructions = parse_instructions(instructions);
 
-    for inst in instructions {
-        for _ in 0..inst.n {
-            let c = cargo_stacks[inst.from].pop().expect("Stack is empty");
-            cargo_stacks[inst.to].push(c);
-        }
-    }
+    crane.move_crates(&mut cargo_stacks, &instructions);
 
     for mut stack in cargo_stacks {
         if let Some(top) = stack.pop() {
@@ -19,6 +19,66 @@ pub fn solve_part1(input: &str) -> String {
     }
 
     return String::from_utf8(top_crates).unwrap_or("".to_owned());
+}
+
+pub fn solve_part2(input: &str) -> String {
+    let crane = CrateMover9001;
+    return part2(input, &crane);
+}
+
+fn part2(input: &str, crane: &impl Crane) -> String {
+    let mut top_crates = Vec::new();
+    let (cargo_stacks, instructions) = input.split_once("\n\n").expect("Wrong input format");
+
+    let mut cargo_stacks = parse_cargo_stacks(cargo_stacks);
+    let instructions = parse_instructions(instructions);
+
+    crane.move_crates(&mut cargo_stacks, &instructions);
+
+    for mut stack in cargo_stacks {
+        if let Some(top) = stack.pop() {
+            top_crates.push(top as u8);
+        }
+    }
+
+    return String::from_utf8(top_crates).unwrap_or("".to_owned());
+}
+
+trait Crane {
+    fn move_crates(&self, cargo_stacks: &mut Vec<Vec<char>>, instructions: &Vec<Instruction>);
+}
+
+struct CrateMover9000;
+
+impl Crane for CrateMover9000 {
+    fn move_crates(&self, cargo_stacks: &mut Vec<Vec<char>>, instructions: &Vec<Instruction>) {
+        for inst in instructions {
+            for _ in 0..inst.n {
+                let c = cargo_stacks[inst.from].pop().expect("Stack is empty");
+                cargo_stacks[inst.to].push(c);
+            }
+        }
+    }
+}
+
+struct CrateMover9001;
+
+impl Crane for CrateMover9001 {
+    fn move_crates(&self, cargo_stacks: &mut Vec<Vec<char>>, instructions: &Vec<Instruction>) {
+        let mut crane_arm = Vec::new();
+        for inst in instructions {
+            // Load crates into crane arm from src stack
+            for _ in 0..inst.n {
+                let c = cargo_stacks[inst.from].pop().expect("Stack is empty");
+                crane_arm.push(c);
+            }
+
+            // Move crates from crane arm to target stack
+            for c in crane_arm.drain(0..crane_arm.len()).rev() {
+                cargo_stacks[inst.to].push(c);
+            }
+        }
+    }
 }
 
 #[derive(Debug)]
@@ -64,6 +124,17 @@ impl TryFrom<&str> for Instruction {
     }
 }
 
+impl std::fmt::Display for Instruction {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_fmt(format_args!(
+            "Move {} from {} to {}",
+            self.n,
+            self.from + 1,
+            self.to + 1
+        ))
+    }
+}
+
 fn parse_cargo_stacks(input: &str) -> Vec<Vec<char>> {
     let lines = input.lines().collect::<Vec<&str>>();
     let line_len = lines.get(0).expect("No cargo stacks").len();
@@ -93,10 +164,6 @@ fn parse_instructions(input: &str) -> Vec<Instruction> {
         .collect()
 }
 
-pub fn solve_part2(input: &str) -> Vec<char> {
-    todo!()
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -113,6 +180,21 @@ move 3 from 1 to 3
 move 2 from 2 to 1
 move 1 from 1 to 2"#;
 
-        assert_eq!(solve_part1(sample_input), ['C', 'M', 'Z'])
+        assert_eq!(solve_part1(sample_input), "CMZ".to_owned())
+    }
+
+    #[test]
+    fn can_solve_part2() {
+        let sample_input = r#"    [D]    
+[N] [C]    
+[Z] [M] [P]
+ 1   2   3 
+
+move 1 from 2 to 1
+move 3 from 1 to 3
+move 2 from 2 to 1
+move 1 from 1 to 2"#;
+
+        assert_eq!(solve_part2(sample_input), "MCD".to_owned())
     }
 }
