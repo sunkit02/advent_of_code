@@ -1,5 +1,3 @@
-use std::ops::RangeBounds;
-
 pub fn solve_part1(input: &str) -> i32 {
     input
         .split("\n")

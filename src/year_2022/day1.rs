@@ -31,7 +31,6 @@ fn find_top_3_calories_sum(input: &mut [usize]) -> usize {
     input[..3].iter().sum()
 }
 
-
 #[cfg(test)]
 mod tests {
     use super::*;

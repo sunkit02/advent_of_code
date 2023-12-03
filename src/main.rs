@@ -5,9 +5,18 @@ pub mod year_2022;
 pub mod year_2023;
 
 fn main() -> Result<()> {
-    let input = fs::read_to_string("data/2022/day4.data")?;
+    let input = fs::read_to_string("data/2023/day3.data")?;
 
-    dbg!(year_2022::day4::solve_part2(&input));
+    let highest_sum = input
+        .split(|c: char| !c.is_numeric())
+        .filter(|s| s.len() > 0)
+        .map(|s| s.parse::<i32>())
+        .flatten()
+        .sum::<i32>();
+
+    dbg!(highest_sum);
+
+    println!("Output: {}", year_2023::day3::solve_part1(&input));
 
     Ok(())
 }
