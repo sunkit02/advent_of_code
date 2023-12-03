@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 pub fn solve_part1(input: &str) -> i32 {
     parse_input(input)
 }
@@ -27,88 +29,51 @@ fn parse_input2(input: &str) -> i32 {
 }
 
 fn parse_line(line: &str) -> Option<i32> {
-    let mut num_str = String::new();
+    let num_map: HashMap<&str, char> = HashMap::from([
+        ("one", '1'),
+        ("two", '2'),
+        ("three", '3'),
+        ("four", '4'),
+        ("five", '5'),
+        ("six", '6'),
+        ("seven", '7'),
+        ("eight", '8'),
+        ("nine", '9'),
+    ]);
+
+    let mut front = None;
+    let mut back = None;
+
     // find front
     for i in 0..line.len() {
         let sub_str = &line[i..];
         if let Some(c) = sub_str.chars().next() {
             if c.is_numeric() {
-                num_str.push(c);
-                break;
+                if front.is_none() {
+                    let _ = front.insert(c);
+                    continue;
+                } else {
+                    let _ = back.insert(c);
+                    continue;
+                }
             }
         }
 
-        if sub_str.starts_with("one") {
-            num_str.push('1');
-            break;
-        } else if sub_str.starts_with("two") {
-            num_str.push('2');
-            break;
-        } else if sub_str.starts_with("three") {
-            num_str.push('3');
-            break;
-        } else if sub_str.starts_with("four") {
-            num_str.push('4');
-            break;
-        } else if sub_str.starts_with("five") {
-            num_str.push('5');
-            break;
-        } else if sub_str.starts_with("six") {
-            num_str.push('6');
-            break;
-        } else if sub_str.starts_with("seven") {
-            num_str.push('7');
-            break;
-        } else if sub_str.starts_with("eight") {
-            num_str.push('8');
-            break;
-        } else if sub_str.starts_with("nine") {
-            num_str.push('9');
-            break;
-        }
-    }
-
-    // find back
-    for i in (0..line.len()).rev() {
-        let sub_str = &line[..=i];
-        if let Some(c) = sub_str.chars().next_back() {
-            if c.is_numeric() {
-                num_str.push(c);
-                break;
+        for (&k, v) in &num_map {
+            if sub_str.starts_with(k) {
+                if front.is_none() {
+                    let _ = front.insert(*v);
+                    continue;
+                } else {
+                    let _ = back.insert(*v);
+                    continue;
+                }
             }
         }
-
-        if sub_str.ends_with("one") {
-            num_str.push('1');
-            break;
-        } else if sub_str.ends_with("two") {
-            num_str.push('2');
-            break;
-        } else if sub_str.ends_with("three") {
-            num_str.push('3');
-            break;
-        } else if sub_str.ends_with("four") {
-            num_str.push('4');
-            break;
-        } else if sub_str.ends_with("five") {
-            num_str.push('5');
-            break;
-        } else if sub_str.ends_with("six") {
-            num_str.push('6');
-            break;
-        } else if sub_str.ends_with("seven") {
-            num_str.push('7');
-            break;
-        } else if sub_str.ends_with("eight") {
-            num_str.push('8');
-            break;
-        } else if sub_str.ends_with("nine") {
-            num_str.push('9');
-            break;
-        }
     }
 
-    return Some(num_str.parse::<i32>().ok()?);
+    let num_str = String::from_utf8(vec![front? as u8, back? as u8]).ok()?;
+    return Some(num_str.parse().ok()?);
 }
 
 #[cfg(test)]
