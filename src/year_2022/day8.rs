@@ -53,7 +53,7 @@ pub fn solve_part1(input: &str) -> i32 {
     visible_count
 }
 
-pub fn solve_part2(input: &str) -> u64 {
+pub fn solve_part2(_input: &str) -> u64 {
     todo!()
 }
 

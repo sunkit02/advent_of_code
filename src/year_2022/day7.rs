@@ -38,9 +38,7 @@ struct Directory {
 
 impl Directory {
     fn size(&self) -> u64 {
-        self.children
-            .iter()
-            .map(|(_, child)| match child {
+        self.children.values().map(|child| match child {
                 DirectoryEntry::Directory(dir) => dir.as_ref().borrow().size(),
                 DirectoryEntry::File(file) => file.size,
             })
@@ -62,15 +60,15 @@ struct Shell {
 }
 
 impl Shell {
-    fn new(file_system: FileSystem) -> Self {
+    fn new(_file_system: FileSystem) -> Self {
         let file_system = FileSystem::new();
         let cwd = file_system.root.clone();
         Self { file_system, cwd }
     }
     fn execute(&mut self, command: &Command) {
         match command.name {
-            Commands::Cd => self.cd(&command),
-            Commands::Ls => self.ls(&command),
+            Commands::Cd => self.cd(command),
+            Commands::Ls => self.ls(command),
         }
     }
 
@@ -113,9 +111,9 @@ impl Shell {
                         };
 
                         let new_dir = Rc::new(RefCell::new(new_dir));
-                        let new_entry = DirectoryEntry::Directory(new_dir.clone());
+                        
 
-                        new_entry
+                        DirectoryEntry::Directory(new_dir.clone())
                     });
 
                     match entry {
@@ -185,7 +183,7 @@ impl TryFrom<&str> for Command {
             return Err("Invalid formatting. Command should start with a `$`".to_owned());
         }
 
-        let (_, command_str) = value.split_once(' ').ok_or_else(|| "Command incomplete.")?;
+        let (_, command_str) = value.split_once(' ').ok_or("Command incomplete.")?;
         let (command, arg) = command_str.split_once(' ').unwrap_or((command_str, ""));
 
         let command = match command {

@@ -23,7 +23,7 @@ pub fn solve_part2(input: &str) -> i32 {
         }
     }
 
-    cards_won.into_iter().map(|(_, count)| count).sum()
+    cards_won.into_values().sum()
 }
 
 #[derive(Debug)]
@@ -34,9 +34,9 @@ struct Card {
 
 impl Card {
     fn total_points(&self) -> i32 {
-        let mut intersections = self.winning_nums.intersection(&self.nums);
+        let intersections = self.winning_nums.intersection(&self.nums);
         let mut n = 0;
-        while let Some(_) = intersections.next() {
+        for _ in intersections {
             n += 1;
         }
 
@@ -48,9 +48,9 @@ impl Card {
     }
 
     fn num_of_matching_numbers(&self) -> i32 {
-        let mut intersections = self.winning_nums.intersection(&self.nums);
+        let intersections = self.winning_nums.intersection(&self.nums);
         let mut n = 0;
-        while let Some(_) = intersections.next() {
+        for _ in intersections {
             n += 1;
         }
 
@@ -70,10 +70,10 @@ impl From<(Vec<i32>, Vec<i32>)> for Card {
 impl TryFrom<&str> for Card {
     type Error = &'static str;
     fn try_from(value: &str) -> Result<Self, Self::Error> {
-        let (_, cards_str) = value.split_once(": ").ok_or_else(|| "Wrong card format.")?;
+        let (_, cards_str) = value.split_once(": ").ok_or("Wrong card format.")?;
         let (winning_nums, nums) = cards_str
             .split_once(" | ")
-            .ok_or_else(|| "No '|' delimeter found.")?;
+            .ok_or("No '|' delimeter found.")?;
         let winning_nums = winning_nums
             .split(' ')
             .filter_map(|num_str| num_str.parse::<i32>().ok())
