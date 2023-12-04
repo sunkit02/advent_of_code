@@ -1,10 +1,8 @@
 use std::{
-    borrow::BorrowMut,
     cell::RefCell,
     collections::HashMap,
     fmt::Write,
     rc::{Rc, Weak},
-    task::Wake,
 };
 
 #[derive(Debug)]
@@ -214,10 +212,10 @@ pub fn solve_part1(input: &str) -> u64 {
     }
 
     let root_dir = shell.file_system.root.borrow();
-    root_dir.children.iter().filter_map(directory_filter).sum()
+    root_dir.children.iter().filter_map(directory_filter1).sum()
 }
 
-fn directory_filter(file_entry: (&String, &DirectoryEntry)) -> Option<u64> {
+fn directory_filter1(file_entry: (&String, &DirectoryEntry)) -> Option<u64> {
     let (_name, entry) = file_entry;
 
     match entry {
@@ -226,7 +224,7 @@ fn directory_filter(file_entry: (&String, &DirectoryEntry)) -> Option<u64> {
                 .borrow()
                 .children
                 .iter()
-                .filter_map(directory_filter)
+                .filter_map(directory_filter1)
                 .sum::<u64>();
             if dir.borrow().size() <= 100000 {
                 result_size += dir.borrow().size();
@@ -238,8 +236,50 @@ fn directory_filter(file_entry: (&String, &DirectoryEntry)) -> Option<u64> {
     }
 }
 
-pub fn solve_part2(input: &str) -> usize {
-    todo!()
+const TOTAL_DISK_SPACE: u64 = 70000000;
+const NEEDED_DISK_SPACE: u64 = 30000000;
+
+pub fn solve_part2(input: &str) -> u64 {
+    let cmds = parse_cmds(input);
+    let file_system = FileSystem::new();
+    let mut shell = Shell::new(file_system);
+
+    for cmd in cmds {
+        shell.execute(&cmd);
+    }
+
+    let root_dir = shell.file_system.root.borrow();
+    let target_space =
+        NEEDED_DISK_SPACE as i64 - (TOTAL_DISK_SPACE as i64 - root_dir.size() as i64);
+
+    if target_space.is_negative() {
+        panic!("There is already enough disk space.");
+    }
+
+    root_dir
+        .children
+        .iter()
+        .filter_map(|child| directory_filter2(child, target_space as u64))
+        .min()
+        .unwrap_or(root_dir.size())
+}
+
+fn directory_filter2(file_entry: (&String, &DirectoryEntry), target_space: u64) -> Option<u64> {
+    let (_name, entry) = file_entry;
+
+    match entry {
+        DirectoryEntry::Directory(dir) if dir.borrow().size() >= target_space => {
+            let children_min = dir
+                .borrow()
+                .children
+                .iter()
+                .filter_map(|child| directory_filter2(child, target_space))
+                .min();
+
+            Some(children_min.unwrap_or(dir.borrow().size()))
+        }
+        _ => None,
+    }
 }
 
 fn parse_cmds(input: &str) -> Vec<Command> {
