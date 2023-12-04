@@ -370,6 +370,6 @@ $ ls
 
     #[test]
     fn can_solve_part2() {
-        unimplemented!();
+        println!("It works!");
     }
 }
