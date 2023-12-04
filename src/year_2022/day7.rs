@@ -38,7 +38,9 @@ struct Directory {
 
 impl Directory {
     fn size(&self) -> u64 {
-        self.children.values().map(|child| match child {
+        self.children
+            .values()
+            .map(|child| match child {
                 DirectoryEntry::Directory(dir) => dir.as_ref().borrow().size(),
                 DirectoryEntry::File(file) => file.size,
             })
@@ -50,7 +52,6 @@ impl Directory {
 struct File {
     name: String,
     size: u64,
-    parent: Option<Weak<RefCell<Directory>>>,
 }
 
 #[derive(Debug)]
@@ -111,7 +112,6 @@ impl Shell {
                         };
 
                         let new_dir = Rc::new(RefCell::new(new_dir));
-                        
 
                         DirectoryEntry::Directory(new_dir.clone())
                     });
@@ -138,7 +138,6 @@ impl Shell {
                     DirectoryEntry::File(File {
                         name: name.to_owned(),
                         size: file_size,
-                        parent: Some(Rc::downgrade(&self.cwd)),
                     })
                 } else {
                     DirectoryEntry::Directory(Rc::new(RefCell::new(Directory {
