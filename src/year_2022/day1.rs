@@ -12,9 +12,8 @@ fn parse_input(input: &str) -> Vec<usize> {
     input
         .split("\n\n")
         .map(|load| {
-            load.split("\n")
-                .map(|e| e.parse::<usize>().ok())
-                .flatten()
+            load.split('\n')
+                .filter_map(|e| e.parse::<usize>().ok())
                 .sum()
         })
         .collect()
@@ -23,7 +22,7 @@ fn parse_input(input: &str) -> Vec<usize> {
 // Return the greatest calorie count
 fn find_max_calories(input: &mut [usize]) -> usize {
     input.sort_by(|a, b| b.cmp(a));
-    return *input.get(0).expect("Should have at least one elf");
+    return *input.first().expect("Should have at least one elf");
 }
 
 fn find_top_3_calories_sum(input: &mut [usize]) -> usize {
@@ -52,7 +51,7 @@ mod tests {
 
 10000"#;
 
-        let result = solve_part1(&sample_input);
+        let result = solve_part1(sample_input);
 
         assert_eq!(result, 24000);
     }
@@ -74,7 +73,7 @@ mod tests {
 
 10000"#;
 
-        let result = solve_part2(&sample_input);
+        let result = solve_part2(sample_input);
 
         assert_eq!(result, 45000);
     }

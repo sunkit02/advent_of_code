@@ -3,7 +3,7 @@ use std::collections::{HashMap, HashSet};
 pub fn solve_part1(input: &str) -> i32 {
     let mut map = HashMap::new();
     input
-        .split("\n")
+        .split('\n')
         .filter_map(|backpack| {
             let mut duplicates = HashSet::new();
             let (first, second) = backpack.split_at(backpack.len() / 2);
@@ -11,11 +11,10 @@ pub fn solve_part1(input: &str) -> i32 {
                 map.entry(c).or_insert(true);
             });
 
-            second.chars().for_each(|c| match map.get(&c) {
-                Some(_) => {
+            second.chars().for_each(|c| {
+                if map.get(&c).is_some() {
                     duplicates.insert(c);
                 }
-                None => {}
             });
 
             map.clear();
@@ -28,7 +27,7 @@ pub fn solve_part1(input: &str) -> i32 {
 
 pub fn solve_part2(input: &str) -> i32 {
     let mut groups = HashMap::new();
-    let elves = input.split("\n");
+    let elves = input.split('\n');
 
     let mut id = 0;
     for (i, elf) in elves.enumerate() {

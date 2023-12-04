@@ -10,22 +10,21 @@ pub fn solve_part2(input: &str) -> i32 {
 
 fn parse_input(input: &str) -> i32 {
     input
-        .split("\n")
-        .map(|line| {
+        .split('\n')
+        .filter_map(|line| {
             let num_chars = line.chars().filter(|c| c.is_numeric());
             let front = num_chars.clone().take(1).collect::<Vec<char>>().pop()?;
             let back = num_chars.rev().take(1).collect::<Vec<char>>().pop()?;
 
             let num_str = String::from_utf8(vec![front as u8, back as u8]).ok()?;
 
-            return Some(num_str.parse::<i32>().ok()?);
+            num_str.parse::<i32>().ok()
         })
-        .flatten()
         .sum()
 }
 
 fn parse_input2(input: &str) -> i32 {
-    input.split("\n").map(parse_line).flatten().sum()
+    input.split('\n').filter_map(parse_line).sum()
 }
 
 fn parse_line(line: &str) -> Option<i32> {
@@ -73,7 +72,7 @@ fn parse_line(line: &str) -> Option<i32> {
     }
 
     let num_str = String::from_utf8(vec![front? as u8, back? as u8]).ok()?;
-    return Some(num_str.parse().ok()?);
+    num_str.parse().ok()
 }
 
 #[cfg(test)]

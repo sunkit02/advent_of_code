@@ -1,12 +1,12 @@
 pub fn solve_part1(input: &str) -> i32 {
     input
-        .split("\n")
-        .filter_map(|pair| pair.split_once(","))
+        .split('\n')
+        .filter_map(|pair| pair.split_once(','))
         .filter_map(|pair: (&str, &str)| -> Option<((i32, i32), (i32, i32))> {
             let (first, second) = pair;
 
-            let (f_low, f_high) = first.split_once("-")?;
-            let (s_low, s_high) = second.split_once("-")?;
+            let (f_low, f_high) = first.split_once('-')?;
+            let (s_low, s_high) = second.split_once('-')?;
 
             Some((
                 (f_low.parse().ok()?, f_high.parse().ok()?),
@@ -15,24 +15,20 @@ pub fn solve_part1(input: &str) -> i32 {
         })
         .filter(|pair| {
             let ((a_low, a_high), (b_low, b_high)) = pair;
-            if a_low <= b_low && a_high >= b_high || b_low <= a_low && b_high >= a_high {
-                true
-            } else {
-                false
-            }
+            a_low <= b_low && a_high >= b_high || b_low <= a_low && b_high >= a_high
         })
         .count() as i32
 }
 
 pub fn solve_part2(input: &str) -> i32 {
     input
-        .split("\n")
-        .filter_map(|pair| pair.split_once(","))
+        .split('\n')
+        .filter_map(|pair| pair.split_once(','))
         .filter_map(|pair: (&str, &str)| -> Option<((i32, i32), (i32, i32))> {
             let (first, second) = pair;
 
-            let (f_low, f_high) = first.split_once("-")?;
-            let (s_low, s_high) = second.split_once("-")?;
+            let (f_low, f_high) = first.split_once('-')?;
+            let (s_low, s_high) = second.split_once('-')?;
 
             Some((
                 (f_low.parse().ok()?, f_high.parse().ok()?),
@@ -44,15 +40,9 @@ pub fn solve_part2(input: &str) -> i32 {
             let a_range = *a_low..=*a_high;
             let b_range = *b_low..=*b_high;
 
-            if a_range.contains(b_low)
+            a_range.contains(b_low)
                 || a_range.contains(b_high)
-                || b_range.contains(a_low)
-                || b_range.contains(a_high)
-            {
-                true
-            } else {
-                false
-            }
+                || b_range.contains(a_low) || b_range.contains(a_high)
         })
         .count() as i32
 }

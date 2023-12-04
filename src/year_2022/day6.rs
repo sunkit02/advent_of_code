@@ -18,7 +18,7 @@ pub fn solve_part1(input: &str) -> usize {
         frame.clear();
     }
 
-    return usize::MAX;
+    usize::MAX
 }
 
 pub fn solve_part2(input: &str) -> usize {
@@ -36,7 +36,7 @@ pub fn solve_part2(input: &str) -> usize {
         frame.clear();
     }
 
-    return usize::MAX;
+    usize::MAX
 }
 
 #[cfg(test)]

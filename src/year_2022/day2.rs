@@ -59,7 +59,7 @@ impl PlayResult {
         match self {
             Self::Win(hand_played) => hand_played.value() + 6,
             Self::Draw(hand_played) => hand_played.value() + 3,
-            Self::Lose(hand_played) => hand_played.value() + 0,
+            Self::Lose(hand_played) => hand_played.value(),
         }
     }
 
@@ -91,20 +91,19 @@ impl PlayResult {
             },
         };
 
-        return result;
+        result
     }
 }
 
 fn parse_input(input: &str) -> Vec<(Hand, Hand)> {
     let mut line_num = 1;
     input
-        .split("\n")
-        .map(|hands| {
-            let (left, right) = hands.split_once(" ")?;
+        .split('\n')
+        .filter_map(|hands| {
+            let (left, right) = hands.split_once(' ')?;
             line_num += 1;
             Some((Hand::from(left), Hand::from(right)))
         })
-        .flatten()
         .collect()
 }
 
@@ -118,12 +117,11 @@ fn play(input: &[(Hand, Hand)]) -> i32 {
 
 fn parse_input2(input: &str) -> i32 {
     input
-        .split("\n")
-        .map(|hands| {
-            let (left, right) = hands.split_once(" ")?;
+        .split('\n')
+        .filter_map(|hands| {
+            let (left, right) = hands.split_once(' ')?;
             Some(PlayResult::from_target_result(left, right))
         })
-        .flatten()
         .map(|result| result.value())
         .sum()
 }

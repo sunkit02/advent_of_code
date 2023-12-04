@@ -1,6 +1,6 @@
 pub fn solve_part1(input: &str) -> String {
     let crane = CrateMover9000;
-    return part1(input, &crane);
+    part1(input, &crane)
 }
 
 fn part1(input: &str, crane: &impl Crane) -> String {
@@ -18,12 +18,12 @@ fn part1(input: &str, crane: &impl Crane) -> String {
         }
     }
 
-    return String::from_utf8(top_crates).unwrap_or("".to_owned());
+    String::from_utf8(top_crates).unwrap_or("".to_owned())
 }
 
 pub fn solve_part2(input: &str) -> String {
     let crane = CrateMover9001;
-    return part2(input, &crane);
+    part2(input, &crane)
 }
 
 fn part2(input: &str, crane: &impl Crane) -> String {
@@ -41,17 +41,17 @@ fn part2(input: &str, crane: &impl Crane) -> String {
         }
     }
 
-    return String::from_utf8(top_crates).unwrap_or("".to_owned());
+    String::from_utf8(top_crates).unwrap_or("".to_owned())
 }
 
 trait Crane {
-    fn move_crates(&self, cargo_stacks: &mut Vec<Vec<char>>, instructions: &Vec<Instruction>);
+    fn move_crates(&self, cargo_stacks: &mut Vec<Vec<char>>, instructions: &[Instruction]);
 }
 
 struct CrateMover9000;
 
 impl Crane for CrateMover9000 {
-    fn move_crates(&self, cargo_stacks: &mut Vec<Vec<char>>, instructions: &Vec<Instruction>) {
+    fn move_crates(&self, cargo_stacks: &mut Vec<Vec<char>>, instructions: &[Instruction]) {
         for inst in instructions {
             for _ in 0..inst.n {
                 let c = cargo_stacks[inst.from].pop().expect("Stack is empty");
@@ -64,7 +64,7 @@ impl Crane for CrateMover9000 {
 struct CrateMover9001;
 
 impl Crane for CrateMover9001 {
-    fn move_crates(&self, cargo_stacks: &mut Vec<Vec<char>>, instructions: &Vec<Instruction>) {
+    fn move_crates(&self, cargo_stacks: &mut Vec<Vec<char>>, instructions: &[Instruction]) {
         let mut crane_arm = Vec::new();
         for inst in instructions {
             // Load crates into crane arm from src stack
@@ -95,11 +95,11 @@ impl TryFrom<&str> for Instruction {
     type Error = String;
 
     fn try_from(value: &str) -> Result<Self, Self::Error> {
-        let mut splits = value.split(" ");
+        let mut splits = value.split(' ');
         splits.next();
         let n = match splits.next() {
             Some(n) => n.parse::<usize>().map_err(|e| e.to_string())?,
-            None => return Err(format!("No move num.")),
+            None => return Err("No move num.".to_string()),
         };
 
         splits.next();
@@ -108,7 +108,7 @@ impl TryFrom<&str> for Instruction {
             // Subtract 1 for index;
             n.parse::<usize>().map_err(|e| e.to_string())? - 1
         } else {
-            return Err(format!("No from num."));
+            return Err("No from num.".to_string());
         };
 
         splits.next();
@@ -117,7 +117,7 @@ impl TryFrom<&str> for Instruction {
             // Subtract 1 for index;
             n.parse::<usize>().map_err(|e| e.to_string())? - 1
         } else {
-            return Err(format!("No from num."));
+            return Err("No from num.".to_string());
         };
 
         Ok(Self { from, to, n })
@@ -137,13 +137,13 @@ impl std::fmt::Display for Instruction {
 
 fn parse_cargo_stacks(input: &str) -> Vec<Vec<char>> {
     let lines = input.lines().collect::<Vec<&str>>();
-    let line_len = lines.get(0).expect("No cargo stacks").len();
+    let line_len = lines.first().expect("No cargo stacks").len();
     let num_stacks = line_len / 4 + 1;
 
     let mut stacks = vec![vec![]; num_stacks];
     stacks.fill(Vec::default());
 
-    for (_y, line) in lines.iter().enumerate() {
+    for line in &lines {
         for (x, c) in line.chars().enumerate() {
             if c.is_uppercase() {
                 // Indices of crate values: 1 5 9 13 17 21 25 29 33
@@ -155,7 +155,7 @@ fn parse_cargo_stacks(input: &str) -> Vec<Vec<char>> {
         }
     }
 
-    return stacks;
+    stacks
 }
 fn parse_instructions(input: &str) -> Vec<Instruction> {
     input

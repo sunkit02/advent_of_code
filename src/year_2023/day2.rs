@@ -20,15 +20,15 @@ impl TryFrom<&str> for MaxGameRecord {
     fn try_from(value: &str) -> Result<Self, Self::Error> {
         let (id_str, values_str) = value
             .split_once(": ")
-            .ok_or_else(|| "Failed to split initially at ': '")?;
+            .ok_or("Failed to split initially at ': '")?;
 
         let (_, id) = id_str
-            .split_once(" ")
-            .ok_or_else(|| "Failed to split `id_str`")?;
+            .split_once(' ')
+            .ok_or("Failed to split `id_str`")?;
 
         let id = id
             .parse::<i32>()
-            .expect(&format!("Failed to parse: {}", id));
+            .unwrap_or_else(|_| panic!("Failed to parse: {}", id));
 
         let mut red = 0;
         let mut green = 0;
@@ -37,8 +37,8 @@ impl TryFrom<&str> for MaxGameRecord {
         for set in values_str.split("; ") {
             for pair in set.split(", ") {
                 let (num_str, color) = pair
-                    .split_once(" ")
-                    .ok_or_else(|| "Failed to split at ' '")?;
+                    .split_once(' ')
+                    .ok_or("Failed to split at ' '")?;
                 let num = num_str.parse::<i32>().map_err(|e| e.to_string())?;
 
                 match color {
@@ -50,18 +50,18 @@ impl TryFrom<&str> for MaxGameRecord {
             }
         }
 
-        return Ok(Self {
+        Ok(Self {
             id,
             red,
             green,
             blue,
-        });
+        })
     }
 }
 
 fn parse_input(input: &str) -> i32 {
     input
-        .split("\n")
+        .split('\n')
         .filter_map(|line| {
             let MaxGameRecord {
                 id,
@@ -73,14 +73,14 @@ fn parse_input(input: &str) -> i32 {
             if red <= 12 && green <= 13 && blue <= 14 {
                 return Some(id);
             }
-            return None;
+            None
         })
         .sum()
 }
 
 fn parse_input2(input: &str) -> i32 {
     input
-        .split("\n")
+        .split('\n')
         .filter_map(|line| {
             let MaxGameRecord {
                 id: _,

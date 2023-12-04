@@ -93,7 +93,7 @@ pub fn solve_part1(input: &str) -> i32 {
         }
     }
 
-    return sum;
+    sum
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
@@ -112,18 +112,15 @@ pub fn solve_part2(input: &str) -> i32 {
         for (x, c) in line.iter().enumerate() {
             if c.is_numeric() {
                 num_strs
-                    .entry(num_pt.get_or_insert(Point(x, y)).clone())
-                    .or_insert(String::new())
+                    .entry(*num_pt.get_or_insert(Point(x, y)))
+                    .or_default()
                     .push(*c);
 
                 if x > 0 {
                     // check left
                     if is_gear(schema[y][x - 1]) {
                         if let Some(pt) = num_pt {
-                            gears
-                                .entry(Point(x - 1, y))
-                                .or_insert(HashSet::new())
-                                .insert(pt);
+                            gears.entry(Point(x - 1, y)).or_default().insert(pt);
                         }
                     }
 
@@ -131,10 +128,7 @@ pub fn solve_part2(input: &str) -> i32 {
                         // check up left
                         if is_gear(schema[y - 1][x - 1]) {
                             if let Some(pt) = num_pt {
-                                gears
-                                    .entry(Point(x - 1, y - 1))
-                                    .or_insert(HashSet::new())
-                                    .insert(pt);
+                                gears.entry(Point(x - 1, y - 1)).or_default().insert(pt);
                             }
                         }
                     }
@@ -143,10 +137,7 @@ pub fn solve_part2(input: &str) -> i32 {
                         // check down left
                         if is_gear(schema[y + 1][x - 1]) {
                             if let Some(pt) = num_pt {
-                                gears
-                                    .entry(Point(x - 1, y + 1))
-                                    .or_insert(HashSet::new())
-                                    .insert(pt);
+                                gears.entry(Point(x - 1, y + 1)).or_default().insert(pt);
                             }
                         }
                     }
@@ -156,10 +147,7 @@ pub fn solve_part2(input: &str) -> i32 {
                     // check up
                     if is_gear(schema[y - 1][x]) {
                         if let Some(pt) = num_pt {
-                            gears
-                                .entry(Point(x, y - 1))
-                                .or_insert(HashSet::new())
-                                .insert(pt);
+                            gears.entry(Point(x, y - 1)).or_default().insert(pt);
                         }
                     }
                 }
@@ -168,10 +156,7 @@ pub fn solve_part2(input: &str) -> i32 {
                     // check down
                     if is_gear(schema[y + 1][x]) {
                         if let Some(pt) = num_pt {
-                            gears
-                                .entry(Point(x, y + 1))
-                                .or_insert(HashSet::new())
-                                .insert(pt);
+                            gears.entry(Point(x, y + 1)).or_default().insert(pt);
                         }
                     }
                 }
@@ -180,10 +165,7 @@ pub fn solve_part2(input: &str) -> i32 {
                     // check right
                     if is_gear(schema[y][x + 1]) {
                         if let Some(pt) = num_pt {
-                            gears
-                                .entry(Point(x + 1, y))
-                                .or_insert(HashSet::new())
-                                .insert(pt);
+                            gears.entry(Point(x + 1, y)).or_default().insert(pt);
                         }
                     }
 
@@ -191,10 +173,7 @@ pub fn solve_part2(input: &str) -> i32 {
                         // check up right
                         if is_gear(schema[y - 1][x + 1]) {
                             if let Some(pt) = num_pt {
-                                gears
-                                    .entry(Point(x + 1, y - 1))
-                                    .or_insert(HashSet::new())
-                                    .insert(pt);
+                                gears.entry(Point(x + 1, y - 1)).or_default().insert(pt);
                             }
                         }
                     }
@@ -203,10 +182,7 @@ pub fn solve_part2(input: &str) -> i32 {
                         // check down right
                         if is_gear(schema[y + 1][x + 1]) {
                             if let Some(pt) = num_pt {
-                                gears
-                                    .entry(Point(x + 1, y + 1))
-                                    .or_insert(HashSet::new())
-                                    .insert(pt);
+                                gears.entry(Point(x + 1, y + 1)).or_default().insert(pt);
                             }
                         }
                     }
@@ -228,48 +204,46 @@ pub fn solve_part2(input: &str) -> i32 {
         }
     }
 
-    return sum;
+    sum
 }
 
 fn is_gear(c: char) -> bool {
-    return c == '*';
+    c == '*'
 }
 
 fn is_symbol(c: char) -> bool {
-    match c {
-        '`' => true,
-        '~' => true,
-        '!' => true,
-        '@' => true,
-        '#' => true,
-        '$' => true,
-        '%' => true,
-        '^' => true,
-        '&' => true,
-        '*' => true,
-        '(' => true,
-        ')' => true,
-        '-' => true,
-        '_' => true,
-        '+' => true,
-        '=' => true,
-        '[' => true,
-        ']' => true,
-        '{' => true,
-        '}' => true,
-        '\\' => true,
-        '|' => true,
-        ';' => true,
-        ':' => true,
-        '\'' => true,
-        '"' => true,
-        ',' => true,
-        '<' => true,
-        '>' => true,
-        '?' => true,
-        '/' => true,
-        _ => false,
-    }
+    matches!(
+        c,
+        '`' | '~'
+            | '!'
+            | '@'
+            | '#'
+            | '$'
+            | '%'
+            | '^'
+            | '&'
+            | '*'
+            | '('
+            | ')'
+            | '-'
+            | '_'
+            | '+'
+            | '='
+            | '['
+            | ']'
+            | '{'
+            | '}'
+            | '\\'
+            | '|'
+            | ';'
+            | ':'
+            | '\''
+            | '"'
+            | '<'
+            | '>'
+            | '?'
+            | '/'
+    )
 }
 
 #[cfg(test)]
