@@ -1,5 +1,5 @@
-pub fn solve_part1(input: &str) -> u32 {
-    let races = parse_input(input);
+pub fn solve_part1(input: &str) -> usize {
+    let races = parse_input1(input);
     races
         .into_iter()
         .map(|race| {
@@ -8,22 +8,28 @@ pub fn solve_part1(input: &str) -> u32 {
                     let dist = hold_time * (race.time - hold_time);
                     dist > race.record_dist
                 })
-                .count() as u32
+                .count()
         })
         .product()
 }
 
-pub fn solve_part2(input: &str) -> u64 {
-    todo!()
+pub fn solve_part2(input: &str) -> usize {
+    let race = parse_input2(input);
+    (0..=race.time)
+        .filter(|hold_time| {
+            let dist = hold_time * (race.time - hold_time);
+            dist > race.record_dist
+        })
+        .count()
 }
 
 #[derive(Debug)]
 struct Race {
-    time: u32,
-    record_dist: u32,
+    time: u64,
+    record_dist: u64,
 }
 
-fn parse_input(input: &str) -> Vec<Race> {
+fn parse_input1(input: &str) -> Vec<Race> {
     let (times, dists) = input.split_once('\n').expect("Should have two lines");
 
     let (_title, times_str) = times.split_once(':').expect("Wrong time format");
@@ -33,13 +39,13 @@ fn parse_input(input: &str) -> Vec<Race> {
         if c.is_numeric() {
             buf.push(c);
         } else if !buf.is_empty() {
-            times.push(buf.parse::<u32>().expect("Failed to parse number"));
+            times.push(buf.parse::<u64>().expect("Failed to parse number"));
             buf.clear();
         }
     }
     // Clear up buf last time
     if !buf.is_empty() {
-        times.push(buf.parse::<u32>().expect("Failed to parse number"));
+        times.push(buf.parse::<u64>().expect("Failed to parse number"));
     }
 
     let (_title, dists_str) = dists.split_once(':').expect("Wrong time format");
@@ -49,13 +55,13 @@ fn parse_input(input: &str) -> Vec<Race> {
         if c.is_numeric() {
             buf.push(c);
         } else if !buf.is_empty() {
-            dists.push(buf.parse::<u32>().expect("Failed to parse number"));
+            dists.push(buf.parse::<u64>().expect("Failed to parse number"));
             buf.clear();
         }
     }
     // Clear up buf last time
     if !buf.is_empty() {
-        dists.push(buf.parse::<u32>().expect("Failed to parse number"));
+        dists.push(buf.parse::<u64>().expect("Failed to parse number"));
     }
 
     times
@@ -68,6 +74,41 @@ fn parse_input(input: &str) -> Vec<Race> {
         .collect()
 }
 
+fn parse_input2(input: &str) -> Race {
+    let (time, dist) = input.split_once('\n').expect("Should have two lines");
+
+    let (_title, time_str) = time.split_once(':').expect("Wrong time format");
+    let mut buf = String::new();
+    for c in time_str.chars() {
+        if c.is_numeric() {
+            buf.push(c);
+        }
+    }
+    let time = if !buf.is_empty() {
+        buf.parse::<u64>().expect("Failed to parse number")
+    } else {
+        panic!("No time found");
+    };
+
+    let (_title, dist_str) = dist.split_once(':').expect("Wrong dist format");
+    let mut buf = String::new();
+    for c in dist_str.chars() {
+        if c.is_numeric() {
+            buf.push(c);
+        }
+    }
+    let dist = if !buf.is_empty() {
+        buf.parse::<u64>().expect("Failed to parse number")
+    } else {
+        panic!("No dist found");
+    };
+
+    Race {
+        time,
+        record_dist: dist,
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -78,5 +119,13 @@ mod tests {
 Distance:  9  40  200"#;
 
         assert_eq!(solve_part1(sample_input), 288);
+    }
+
+    #[test]
+    fn can_solve_part2() {
+        let sample_input = r#"Time:      7  15   30
+Distance:  9  40  200"#;
+
+        assert_eq!(solve_part2(sample_input), 71503);
     }
 }
